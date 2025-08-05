@@ -13,13 +13,12 @@ public class JpaMain {
         tx.begin();
 
         try {
-            /* Member 등록
-            Member member = new Member();
-            member.setId(2L);
-            member.setName("HelloB");
-
-            em.persist(member);
-            */
+            // Member 등록
+//            Member member = new Member();
+//            member.setId(2L);
+//            member.setName("HelloB");
+//
+//            em.persist(member);
 
             // Member 단일 조회
 //            Member findMember = em.find(Member.class, 1L);
