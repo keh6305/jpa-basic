@@ -71,7 +71,7 @@ public class JpaMain {
 //
 //            System.out.println("----- Line -----");
 
-            // 플러쉬
+            // 플러쉬 - 영속성의 변경 내용을 데이터베이스에 반영
 //            Member member = new Member(6L, "hello6");
 //            em.persist(member);
 //
@@ -89,20 +89,48 @@ public class JpaMain {
 //
 //            Member member2 = em.find(Member.class, 6L);
 
-            Member member = new Member();
-            member.setName("MemberB");
-            member.setRoleType(RoleType.USER);
+            // 자동 커밋 시점 확인
+//            Member member = new Member();
+//            member.setName("MemberB");
+//            member.setRoleType(RoleType.USER);
+//
+//            Member member2 = new Member();
+//            member2.setName("MemberC");
+//            member2.setRoleType(RoleType.ADMIN);
+//
+//            System.out.println("---------------------");
+//            em.persist(member);
+//            em.persist(member2);
+//            System.out.println("member.getId() = " + member.getId());
+//            System.out.println("member2.getId() = " + member2.getId());
+//            System.out.println("---------------------");
 
-            Member member2 = new Member();
-            member2.setName("MemberC");
-            member2.setRoleType(RoleType.ADMIN);
+//            Team team = new Team();
+//            team.setName("Team1");
+//            em.persist(team);
+//
+//            Member member = new Member();
+//            member.setName("Member1");
+//            member.setTeam(team);
+//            em.persist(member);
+//
+//            em.flush();
+//            em.clear();
 
-            System.out.println("---------------------");
-            em.persist(member);
-            em.persist(member2);
-            System.out.println("member.getId() = " + member.getId());
-            System.out.println("member2.getId() = " + member2.getId());
-            System.out.println("---------------------");
+            Member findMember = em.find(Member.class, 102L);
+
+            Team findTeam = findMember.getTeam();
+            System.out.println("findTeam = " + findTeam.getName());
+
+            // Member에서 Team 수정
+//            Team newTeam = em.find(Team.class, 2L);
+//            findMember.setTeam(newTeam);
+
+            List<Member> members = findMember.getTeam().getMembers();
+
+            for (Member member : members) {
+                System.out.println("member = " + member.getId());
+            }
 
             tx.commit();
         }
