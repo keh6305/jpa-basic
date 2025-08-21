@@ -2,7 +2,9 @@ package hellojpa;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @TableGenerator(name = "MEMBER_SEQ_GENERATOR", table = "MY_SEQUENCES", pkColumnValue = "MEMBER_SEQ", allocationSize = 1)
@@ -42,9 +44,25 @@ public class Member {
 //    @Column(name = "TEAM_ID")
 //    private Long teamId;
 
+    // 다대일 매핑
     @ManyToOne
-    @JoinColumn(name = "TEAM_ID")
+    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 일대다 양방향 매핑
     private Team team;
+
+    // 일대일 매칭
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+    // 다대다 매칭
+    // 최대한 사용하지 말 것
+    @ManyToMany
+    @JoinTable(name = "MEMBER_PRODUCT")
+    private List<Product> products = new ArrayList<>();
+
+    // 다대다 매칭 -> 일대다 매칭으로 변경
+    @OneToMany(mappedBy = "member")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
 
     public Member() {
     }
@@ -74,6 +92,14 @@ public class Member {
 
         // 양방향 연관 관계 주입
         team.getMembers().add(this);
+    }
+
+    public Locker getLocker() {
+        return locker;
+    }
+
+    public void setLocker(Locker locker) {
+        this.locker = locker;
     }
 
     @Override

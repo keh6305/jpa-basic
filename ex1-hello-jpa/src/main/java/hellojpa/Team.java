@@ -14,6 +14,7 @@ public class Team {
 
     private String name;
 
+    // 일대다 매핑
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<Member>();
 
