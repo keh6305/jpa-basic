@@ -152,17 +152,64 @@ public class JpaMain {
 //            System.out.println("findItem = " + findItem);
 
             // @MappedSuperclass
+//            Member member = new Member();
+//            member.setName("user");
+//            member.setCreatedBy("admin");
+//            member.setCreatedDate(LocalDateTime.now());
+//
+//            em.persist(member);
+
+            // Proxy
             Member member = new Member();
-            member.setName("user");
-            member.setCreatedBy("admin");
-            member.setCreatedDate(LocalDateTime.now());
+            member.setName("user1");
+
+            Member member2 = new Member();
+            member2.setName("user2");
 
             em.persist(member);
+            em.persist(member2);
+
+            em.flush();
+            em.clear();
+
+            // 실제 엔티티 객체 조회
+//            Member findMember = em.find(Member.class, member.getId());
+//            System.out.println("findMember.getClass() = " + findMember.getClass());
+//            System.out.println("findMember.getId() = " + findMember.getId());
+//            System.out.println("findMember.getName() = " + findMember.getName());
+
+            // 가짜 엔티티 객체 조회(프록시)
+//            Member findMember2 = em.getReference(Member.class, member.getId());
+//            System.out.println("before findMember2.getClass() = " + findMember2.getClass());
+//            System.out.println("findMember2.getId() = " + findMember2.getId());
+//            System.out.println("findMember2.getName() = " + findMember2.getName());
+//            System.out.println("after findMember2.getClass() = " + findMember2.getClass());
+
+            // 타입 비교
+//            Member findMember = em.find(Member.class, member.getId());
+//            Member findMember2 = em.find(Member.class, member2.getId());
+//            Member findMember2 = em.getReference(Member.class, member2.getId());
+//
+//            System.out.println("(findMember == findMember2) = " + (findMember.getClass() == findMember2.getClass()));
+//            System.out.println("(findMember instanceof Member) = " + (findMember instanceof Member));
+//            System.out.println("(findMember2 instanceof Member) = " + (findMember2 instanceof Member));
+
+            Member refMember = em.getReference(Member.class, member.getId());
+            System.out.println("refMember.getClass() = " + refMember.getClass());
+
+            // 준영속 에러 - LazyInitializationException
+//            em.clear();
+//            System.out.println("refMember.getName() = " + refMember.getName());
+
+            // 초기화 여부 확인
+            System.out.println("emf.getPersistenceUnitUtil().isLoaded(refMember) = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
 
             tx.commit();
         }
         catch (Exception e) {
             tx.rollback();
+
+            e.printStackTrace();
         }
         finally {
             em.close();
