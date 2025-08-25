@@ -2,6 +2,7 @@ package hellojpa;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class JpaMain {
@@ -117,20 +118,46 @@ public class JpaMain {
 //            em.flush();
 //            em.clear();
 
-            Member findMember = em.find(Member.class, 102L);
-
-            Team findTeam = findMember.getTeam();
-            System.out.println("findTeam = " + findTeam.getName());
+//            Member findMember = em.find(Member.class, 102L);
+//
+//            Team findTeam = findMember.getTeam();
+//            System.out.println("findTeam = " + findTeam.getName());
 
             // Member에서 Team 수정
 //            Team newTeam = em.find(Team.class, 2L);
 //            findMember.setTeam(newTeam);
 
-            List<Member> members = findMember.getTeam().getMembers();
+//            List<Member> members = findMember.getTeam().getMembers();
+//
+//            for (Member member : members) {
+//                System.out.println("member = " + member.getId());
+//            }
 
-            for (Member member : members) {
-                System.out.println("member = " + member.getId());
-            }
+//            Movie movie = new Movie();
+//            movie.setDirector("aaa");
+//            movie.setActor("bbb");
+//            movie.setName("ccc");
+//            movie.setPrice(10000);
+//
+//            em.persist(movie);
+//
+//            em.flush();
+//            em.clear();
+//
+//            Movie findMovie = em.find(Movie.class, movie.getId());
+//            System.out.println("findMovie = " + findMovie);
+//
+//            // 추상 테이블 조회
+//            Item findItem = em.find(Item.class, findMovie.getId());
+//            System.out.println("findItem = " + findItem);
+
+            // @MappedSuperclass
+            Member member = new Member();
+            member.setName("user");
+            member.setCreatedBy("admin");
+            member.setCreatedDate(LocalDateTime.now());
+
+            em.persist(member);
 
             tx.commit();
         }

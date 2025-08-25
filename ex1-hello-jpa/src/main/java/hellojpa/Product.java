@@ -14,7 +14,7 @@ public class Product {
     private String name;
 
     @ManyToMany(mappedBy = "products")
-    private List<Product> products = new ArrayList<>();
+    private List<Member> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "product")
     private List<MemberProduct> memberProducts = new ArrayList<>();
@@ -38,11 +38,19 @@ public class Product {
         this.name = name;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public List<Member> getMembers() {
+        return members;
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void setMembers(List<Member> members) {
+        this.members = members;
+    }
+
+    public List<MemberProduct> getMemberProducts() {
+        return memberProducts;
+    }
+
+    public void setMemberProducts(List<MemberProduct> memberProducts) {
+        this.memberProducts = memberProducts;
     }
 }
