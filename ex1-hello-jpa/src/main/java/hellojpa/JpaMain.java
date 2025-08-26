@@ -194,15 +194,33 @@ public class JpaMain {
 //            System.out.println("(findMember instanceof Member) = " + (findMember instanceof Member));
 //            System.out.println("(findMember2 instanceof Member) = " + (findMember2 instanceof Member));
 
-            Member refMember = em.getReference(Member.class, member.getId());
-            System.out.println("refMember.getClass() = " + refMember.getClass());
+//            Member refMember = em.getReference(Member.class, member.getId());
+//            System.out.println("refMember.getClass() = " + refMember.getClass());
+//
+//            // 준영속 에러 - LazyInitializationException
+////            em.clear();
+////            System.out.println("refMember.getName() = " + refMember.getName());
+//
+//            // 초기화 여부 확인
+//            System.out.println("emf.getPersistenceUnitUtil().isLoaded(refMember) = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
 
-            // 준영속 에러 - LazyInitializationException
-//            em.clear();
-//            System.out.println("refMember.getName() = " + refMember.getName());
+            // 영속성
+            Child child1 = new Child();
+            Child child2 = new Child();
 
-            // 초기화 여부 확인
-            System.out.println("emf.getPersistenceUnitUtil().isLoaded(refMember) = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+//            em.persist(child1);
+//            em.persist(child2);
+
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+            findParent.getChildren().remove(0);
 
             tx.commit();
         }

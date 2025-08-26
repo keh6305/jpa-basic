@@ -46,7 +46,8 @@ public class Member extends BaseEntity {
 //    private Long teamId;
 
     // 다대일 매핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)      // 지연 로딩
+//    @ManyToOne(fetch = FetchType.EAGER)     // 즉시 로딩
     @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false) // 일대다 양방향 매핑
     private Team team;
 
