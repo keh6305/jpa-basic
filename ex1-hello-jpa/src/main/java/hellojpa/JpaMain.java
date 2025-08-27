@@ -160,17 +160,17 @@ public class JpaMain {
 //            em.persist(member);
 
             // Proxy
-            Member member = new Member();
-            member.setName("user1");
-
-            Member member2 = new Member();
-            member2.setName("user2");
-
-            em.persist(member);
-            em.persist(member2);
-
-            em.flush();
-            em.clear();
+//            Member member = new Member();
+//            member.setName("user1");
+//
+//            Member member2 = new Member();
+//            member2.setName("user2");
+//
+//            em.persist(member);
+//            em.persist(member2);
+//
+//            em.flush();
+//            em.clear();
 
             // 실제 엔티티 객체 조회
 //            Member findMember = em.find(Member.class, member.getId());
@@ -205,22 +205,77 @@ public class JpaMain {
 //            System.out.println("emf.getPersistenceUnitUtil().isLoaded(refMember) = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
 
             // 영속성
-            Child child1 = new Child();
-            Child child2 = new Child();
-
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
-
-            em.persist(parent);
+//            Child child1 = new Child();
+//            Child child2 = new Child();
+//
+//            Parent parent = new Parent();
+//            parent.addChild(child1);
+//            parent.addChild(child2);
+//
+//            em.persist(parent);
 //            em.persist(child1);
 //            em.persist(child2);
+//
+//            em.flush();
+//            em.clear();
+//
+//            Parent findParent = em.find(Parent.class, parent.getId());
+//            findParent.getChildren().remove(0);
+
+            // 임베디드 타입
+//            Member member = new  Member();
+//            member.setName("User");
+//            member.setHomeAddress(new Address("city", "street", "1005"));
+//            member.setWorkPeriod(new Period());
+
+            Address address = new Address("home", "street", "1005");
+
+            Member member1 = new Member();
+            member1.setName("User1");
+            member1.setHomeAddress(address);
+
+            member1.getAddressHistory().add(new AddressEntity("city1", "street", "1005"));
+            member1.getAddressHistory().add(new AddressEntity("city2", "street", "1005"));
+            member1.getAddressHistory().add(new AddressEntity("city3", "street", "1005"));
+
+            member1.getFavoriteFoods().add("치킨");
+            member1.getFavoriteFoods().add("족발");
+            member1.getFavoriteFoods().add("마라탕");
+
+            em.persist(member1);
+
+            Address address2 = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+
+            Member member2 = new Member();
+            member2.setName("User2");
+            member2.setHomeAddress(address2);
+
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            Parent findParent = em.find(Parent.class, parent.getId());
-            findParent.getChildren().remove(0);
+            Member findMember = em.find(Member.class, member1.getId());
+
+            // address 수정
+            findMember.setHomeAddress(new  Address("new city", "new street", "new zipcode"));
+
+            // favorite 수정
+            findMember.getFavoriteFoods().remove("마라탕");
+            findMember.getFavoriteFoods().add("감자탕");
+
+            // address history 수정
+            findMember.getAddressHistory().remove(new AddressEntity("city3", "street", "1005"));
+            findMember.getAddressHistory().add(new AddressEntity("city33", "street", "1005"));
+
+
+            System.out.println("findMember = " + findMember.getFavoriteFoods());
+
+            List<AddressEntity> findAddress = findMember.getAddressHistory();
+
+            for(AddressEntity address1 : findAddress){
+                System.out.println("address1 = " + address1.getAddress().getCity() + ", " + address1.getAddress().getStreet() + ", " + address1.getAddress().getZipcode());
+            }
 
             tx.commit();
         }
