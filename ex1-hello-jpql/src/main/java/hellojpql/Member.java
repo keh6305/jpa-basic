@@ -11,9 +11,18 @@ public class Member {
     private String name;
     private int age;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    private MemberType type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEAM_ID")
     private Team team;
+
+    public void changeTeam(Team team) {
+        this.team = team;
+
+        team.getMembers().add(this);
+    }
 
     public int getId() {
         return id;
@@ -45,5 +54,23 @@ public class Member {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public MemberType getType() {
+        return type;
+    }
+
+    public void setType(MemberType type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", type=" + type +
+                '}';
     }
 }

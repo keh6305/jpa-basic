@@ -13,30 +13,148 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setName("User1");
-            member.setAge(20);
+//            Member member = new Member();
+//            member.setName("User1");
+//            member.setAge(20);
+//
+//            em.persist(member);
+//
+//            em.flush();
+//            em.clear();
 
-            em.persist(member);
+            // TypedQuery 타입 조회
+//            TypedQuery<Member> query1 = em.createQuery("SELECT m FROM Member m WHERE m.name = :name", Member.class);
+//            query1.setParameter("name", "User1");
+//
+//            Member result = em.createQuery("SELECT m FROM Member m WHERE m.name = :name", Member.class)
+//                    .setParameter("name", "User1")
+//                    .getSingleResult();
+//
+//            result.setAge(25);
+//
+//            TypedQuery<String> query2 = em.createQuery("SELECT m.name FROM Member m",  String.class);
+//
+//            List<Member> resultList = query1.getResultList();
+//            Member singleResult = query1.getSingleResult();
+//
+//            for(Member m : resultList) {
+//                System.out.println("resultList = " + m.getName());
+//            }
+//
+//            System.out.println("singleResult = " + singleResult.getName());
 
-            TypedQuery<Member> query1 = em.createQuery("SELECT m FROM Member m WHERE m.name = :name", Member.class);
-            query1.setParameter("name", "User1");
+            // Query 타입 조회
+//            Query query3 = em.createQuery("SELECT m.name, m.age FROM Member m");
 
-            Member result = em.createQuery("SELECT m FROM Member m WHERE m.name = :name", Member.class)
-                    .setParameter("name", "User1")
-                    .getSingleResult();
+            // Object 타입 조회
+//            List resultList2 = em.createQuery("SELECT m.name, m.age FROM Member m")
+//                    .getResultList();
+//
+//            Object obj = resultList2.get(0);
+//            Object[] objArray = (Object[]) obj;
+//
+//            System.out.println("name = " + objArray[0]);
+//            System.out.println("age = " + objArray[1]);
 
-            TypedQuery<String> query2 = em.createQuery("SELECT m.name FROM Member m",  String.class);
-            Query query3 = em.createQuery("SELECT m.name, m.age FROM Member m");
+            // Object[] 타입 조회
+//            List<Object[]> resultList3 = em.createQuery("SELECT m.name, m.age FROM Member m")
+//                    .getResultList();
+//
+//            Object[] objArray2 = resultList3.get(0);
 
-            List<Member> resultList = query1.getResultList();
-            Member singleResult = query1.getSingleResult();
+            // new 타입 조회
+//            List<MemberDTO> resultList4 = em.createQuery("SELECT new hellojpql.MemberDTO(m.name, m.age) FROM Member m")
+//                    .getResultList();
+//
+//            MemberDTO memberDTO = resultList4.get(0);
+//            System.out.println("memberDTO.getName() = " + memberDTO.getName());
+//            System.out.println("memberDTO.getAge() = " + memberDTO.getAge());
 
-            for(Member m : resultList) {
-                System.out.println("resultList = " + m.getName());
+            Team team = new Team();
+            team.setName("Team1");
+
+            em.persist(team);
+
+            for (int i = 1; i <= 10; i++) {
+                Member member = new Member();
+                member.setName("User" + i);
+                member.setAge(10 + i);
+                member.setTeam(team);
+                member.setType(MemberType.ADMIN);
+
+                em.persist(member);
             }
 
-            System.out.println("singleResult = " + singleResult);
+            em.flush();
+            em.clear();
+
+            // 페이징
+//            List<Member> result = em.createQuery("SELECT m FROM Member m ORDER BY m.age DESC",  Member.class)
+//                    .setFirstResult(0)
+//                    .setMaxResults(10)
+//                    .getResultList();
+//
+//            for (Member m : result) {
+//                System.out.println("m = " + m);
+//            }
+
+            // Join
+//            String innerQuery = "SELECT m FROM Member m JOIN m.team t";
+//            String outerQuery = "SELECT m FROM Member m LEFT JOIN m.team t";
+//            String thetaQuery = "SELECT m FROM Member m, Team t WHERE t.id = m.team.id";
+//
+//            List<Member> result = em.createQuery(thetaQuery, Member.class)
+//                    .getResultList();
+//
+//            for (Member m : result) {
+//                System.out.println("m = " + m);
+//                System.out.println("m.getTeam() = " + m.getTeam());
+//            }
+
+            // 서브쿼리
+//            String query = "SELECT m FROM Member m WHERE m.age > (SELECT AVG(mm.age) FROM Member mm)";
+//            List<Member> result = em.createQuery(query, Member.class).getResultList();
+//
+//            System.out.println("result = " + result);
+
+            // 타입 표현
+//            String query = "SELECT m.name, 'HELLO', true FROM Member m WHERE m.type = hellojpql.MemberType.ADMIN";
+//            List result = em.createQuery(query).getResultList();
+//
+//            System.out.println("result = " + result);
+
+            // 조건식
+//            String query = "SELECT " +
+//                    "CASE WHEN m.age <= 20 THEN '학생요금' " +
+//                         "WHEN m.age >= 60 THEN '경로요금' " +
+//                         "ELSE '일반요금' END " +
+//                    "FROM Member m ";
+
+//            String query = "SELECT COALESCE(m.name, '이름없는 회원') FROM Member m ";
+
+//            String query = "SELECT NULLIF(m.name, 'User1') AS name FROM Member m ";
+//
+//            List<String> result = em.createQuery(query, String.class).getResultList();
+//
+//            for (String s : result) {
+//                System.out.println(s);
+//            }
+
+            // JPQL 함수
+//            String query = "SELECT 'a' || 'b' FROM Member m ";
+//            String query = "SELECT CONCAT('a', 'b') FROM Member m ";
+//            String query = "SELECT SUBSTRING(m.name, 1, 2) FROM Member m ";
+//            String query = "SELECT TRIM(m.name) FROM Member m ";
+//            String query = "SELECT LOCATE('er', m.name) FROM Member m ";
+//
+//            List<String> result = em.createQuery(query, String.class).getResultList();
+//            List<Integer> result = em.createQuery(query, Integer.class).getResultList();
+//
+//            for (String s : result) {
+//                System.out.println(s);
+//            }
+//
+//            System.out.println("result.get(0) = " + result.get(0));
 
             tx.commit();
         }
