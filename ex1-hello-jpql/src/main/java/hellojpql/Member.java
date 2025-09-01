@@ -3,6 +3,10 @@ package hellojpql;
 import jakarta.persistence.*;
 
 @Entity
+@NamedQuery(
+        name = "Member.findByName",
+        query = "SELECT m FROM Member m WHERE m.name = :name "
+)
 public class Member {
     @Id
     @GeneratedValue

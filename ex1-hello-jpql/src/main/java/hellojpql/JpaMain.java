@@ -195,18 +195,52 @@ public class JpaMain {
 //                System.out.println("member = " + member.getName() + ", team = " + member.getTeam().getName());
 //            }
 
-            String query = "SELECT DISTINCT t FROM Team t JOIN FETCH t.members ";
+//            String query = "SELECT DISTINCT t FROM Team t JOIN FETCH t.members ";
+//
+//            List<Team> result = em.createQuery(query, Team.class)
+//                    .getResultList();
+//
+//            for (Team t : result) {
+//                System.out.println("team = " + t.getName() + ", Member = " + t.getMembers().size());
+//
+//                for (Member member : t.getMembers()) {
+//                    System.out.println("member = " + member);
+//                }
+//            }
 
-            List<Team> result = em.createQuery(query, Team.class)
-                    .getResultList();
+            Member member1 = new Member();
+            member1.setName("Member1");
+            member1.setAge(21);
+            member1.setType(MemberType.ADMIN);
 
-            for (Team t : result) {
-                System.out.println("team = " + t.getName() + ", Member = " + t.getMembers().size());
+            em.persist(member1);
 
-                for (Member member : t.getMembers()) {
-                    System.out.println("member = " + member);
-                }
-            }
+            // 엔티티 직접 사용
+//            String query = "SELECT m FROM Member m WHERE m = :member ";
+//            String query = "SELECT m FROM Member m WHERE m.team = :team ";
+//
+//            List<Member> result = em.createQuery(query, Member.class)
+//                    .setParameter("team",  team)
+//                    .getResultList();
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member.getName() + ", team = " + member.getTeam().getName());
+//            }
+
+            // named 쿼리
+//            List<Member> result = em.createNamedQuery("Member.findByName", Member.class)
+//                    .setParameter("name", "Member1")
+//                    .getResultList();
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member);
+//            }
+
+            // 벌크 연산
+            int resultCount = em.createQuery("UPDATE Member m SET m.age = 20 ")
+                    .executeUpdate();
+
+            System.out.println("resultCount = " + resultCount);
 
             tx.commit();
         } catch (Exception e) {
