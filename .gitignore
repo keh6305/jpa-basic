@@ -62,3 +62,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 강의 자료 ###
+/lectures
