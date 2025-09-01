@@ -2,6 +2,7 @@ package hellojpql;
 
 import jakarta.persistence.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -73,14 +74,23 @@ public class JpaMain {
             Team team = new Team();
             team.setName("Team1");
 
+            Team team2 = new Team();
+            team2.setName("Team2");
+
             em.persist(team);
+            em.persist(team2);
 
             for (int i = 1; i <= 10; i++) {
                 Member member = new Member();
                 member.setName("User" + i);
                 member.setAge(10 + i);
-                member.setTeam(team);
                 member.setType(MemberType.ADMIN);
+
+                if (i <= 3) {
+                    member.setTeam(team);
+                } else if (i <= 7) {
+                    member.setTeam(team2);
+                }
 
                 em.persist(member);
             }
@@ -156,14 +166,54 @@ public class JpaMain {
 //
 //            System.out.println("result.get(0) = " + result.get(0));
 
+            // 경로 표현식
+//            String query = "SELECT m.team FROM Member m ";
+//
+//            List<String> result = em.createQuery(query, String.class)
+//                    .getResultList();
+//
+//            for (String s : result) {
+//                System.out.println(s);
+//            }
+
+//            String query = "SELECT t.members FROM Team t ";
+//
+//            List results = em.createQuery(query, Collection.class)
+//                    .getResultList();
+//
+//            for (Object o : results) {
+//                System.out.println("o = " + o);
+//            }
+
+            // Fetch Join
+//            String query = "SELECT m FROM Member m JOIN FETCH m.team ";
+//
+//            List<Member> result = em.createQuery(query, Member.class)
+//                    .getResultList();
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member.getName() + ", team = " + member.getTeam().getName());
+//            }
+
+            String query = "SELECT DISTINCT t FROM Team t JOIN FETCH t.members ";
+
+            List<Team> result = em.createQuery(query, Team.class)
+                    .getResultList();
+
+            for (Team t : result) {
+                System.out.println("team = " + t.getName() + ", Member = " + t.getMembers().size());
+
+                for (Member member : t.getMembers()) {
+                    System.out.println("member = " + member);
+                }
+            }
+
             tx.commit();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             tx.rollback();
 
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             em.close();
         }
 
