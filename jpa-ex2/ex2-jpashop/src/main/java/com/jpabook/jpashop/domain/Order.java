@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "Orders")
+@Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
     @Id
@@ -41,7 +41,7 @@ public class Order {
     public void setMember(Member member) {
         this.member = member;
 
-        member.getOrder().add(this);
+        member.getOrders().add(this);
     }
 
     public void setDelivery(Delivery delivery) {
