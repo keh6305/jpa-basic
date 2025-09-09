@@ -33,7 +33,6 @@ public class InitDb {
             em.persist(book1);
 
             Book book2 = createBook("JPA2 Book", 10000, 100);
-
             em.persist(book2);
 
             OrderItem orderItem1 = OrderItem.createOrderItem(book1, 10000, 1);
@@ -53,7 +52,6 @@ public class InitDb {
             em.persist(book1);
 
             Book book2 = createBook("Spring2 Book", 20000, 100);
-
             em.persist(book2);
 
             OrderItem orderItem1 = OrderItem.createOrderItem(book1, 15000, 1);
