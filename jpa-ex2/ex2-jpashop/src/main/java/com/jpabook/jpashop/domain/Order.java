@@ -21,7 +21,7 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    private LocalDateTime OrderDate;
+    private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
