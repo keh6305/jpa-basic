@@ -67,4 +67,4 @@ out/
 /lectures
 
 ### generated ###
-/generated
+!**/src/main/generated/
