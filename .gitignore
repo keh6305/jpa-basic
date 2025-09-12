@@ -65,3 +65,6 @@ out/
 
 ### 강의 자료 ###
 /lectures
+
+### generated ###
+/generated
