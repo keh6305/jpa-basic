@@ -3,6 +3,8 @@ package com.jpadata.datajpa.repository;
 import com.jpadata.datajpa.dto.MemberDto;
 import com.jpadata.datajpa.entity.Member;
 import com.jpadata.datajpa.entity.Team;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,8 +26,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
+
     @Autowired
     private TeamRepository teamRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Test
     public void testMember() {
@@ -205,5 +211,74 @@ class MemberRepositoryTest {
         assertEquals(0, slice.getNumber());
         assertTrue(slice.isFirst());
         assertTrue(slice.hasNext());
+    }
+
+    @Test
+    public void testBulkUpdate() {
+        memberRepository.save(new Member("User1", 10));
+        memberRepository.save(new Member("User2", 15));
+        memberRepository.save(new Member("User3", 20));
+        memberRepository.save(new Member("User4", 25));
+        memberRepository.save(new Member("User5", 30));
+        memberRepository.save(new Member("User6", 35));
+        memberRepository.save(new Member("User7", 40));
+
+        int result = memberRepository.bulkAgePlus(20);
+
+        assertEquals(5, result);
+
+//        em.flush();
+//        em.clear();
+
+        Member findMember = memberRepository.findMemberByUsername("User5");
+        System.out.println("findMember = " + findMember);
+    }
+
+    @Test
+    public void findMemberLazy() {
+        Team team1 = new Team("Team1");
+        Team team2 = new Team("Team2");
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+
+        memberRepository.save(new Member("User1", 10, team1));
+        memberRepository.save(new Member("User2", 20, team2));
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findAll();
+        List<Member> fetchMembers = memberRepository.findMemberFetchJoin();
+
+        for (Member member : members) {
+            System.out.println("member.getTeam().getClass() = " + member.getTeam().getClass());
+            System.out.println("fetchMembers.getClass() = " + fetchMembers.getClass());
+        }
+    }
+
+    @Test
+    public void testQueryHint() {
+        Member member1 = new Member("User1", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        Member findMember = memberRepository.findReadOnlyByUsername("User1");
+        findMember.setUsername("User11");
+
+        em.flush();
+    }
+
+    @Test
+    public void testQueryLock() {
+        Member member1 = new Member("User1", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findLockByUsername("User1");
     }
 }

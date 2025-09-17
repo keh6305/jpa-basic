@@ -4,6 +4,7 @@ import com.jpadata.datajpa.entity.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -107,5 +108,20 @@ class MemberJpaRepositoryTest {
 
         assertEquals(3, members.size());
         assertEquals(5, totalCount);
+    }
+
+    @Test
+    public void testBulkUpdate() {
+        memberJpaRepository.save(new Member("User1", 10));
+        memberJpaRepository.save(new Member("User2", 15));
+        memberJpaRepository.save(new Member("User3", 20));
+        memberJpaRepository.save(new Member("User4", 25));
+        memberJpaRepository.save(new Member("User5", 30));
+        memberJpaRepository.save(new Member("User6", 35));
+        memberJpaRepository.save(new Member("User7", 40));
+
+        int result = memberJpaRepository.bulkAgePlus(20);
+
+        assertEquals(5, result);
     }
 }
