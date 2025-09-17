@@ -1,11 +1,19 @@
 package com.jpadata.datajpa.repository;
 
+import com.jpadata.datajpa.dto.MemberDto;
 import com.jpadata.datajpa.entity.Member;
+import com.jpadata.datajpa.entity.Team;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private TeamRepository teamRepository;
 
     @Test
     public void testMember() {
@@ -59,5 +69,141 @@ class MemberRepositoryTest {
         // 삭제 검증
         long deleteCount = memberRepository.count();
         assertEquals(0, deleteCount);
+    }
+
+    @Test
+    public void findByUsernameAndAgeGreaterThan() {
+        Member member1 = new Member("User", 10);
+        Member member2 = new Member("User", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> result = memberRepository.findByUsernameAndAgeGreaterThan("User", 15);
+
+        assertEquals("User", result.get(0).getUsername());
+        assertEquals(20, result.get(0).getAge());
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testNamedQuery() {
+        Member member1 = new Member("User1", 10);
+        Member member2 = new Member("User2", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> result = memberRepository.findByUsername("User1");
+        assertEquals("User1", result.get(0).getUsername());
+        assertEquals(10, result.get(0).getAge());
+    }
+
+    @Test
+    public void testQuery() {
+        Member member1 = new Member("User1", 10);
+        Member member2 = new Member("User2", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> result = memberRepository.findUser("User1", 10);
+        assertEquals("User1", result.get(0).getUsername());
+        assertEquals(10, result.get(0).getAge());
+
+        List<String> usernameList = memberRepository.findUsernameList();
+
+        for (String username : usernameList) {
+            System.out.println("username = " + username);
+        }
+    }
+
+    @Test
+    public void testMemberDto() {
+        Team team1 = new Team("Team1");
+
+        teamRepository.save(team1);
+        
+        Member member1 = new Member("User1", 10);
+        member1.setTeam(team1);
+
+        memberRepository.save(member1);
+
+        List<MemberDto> memberDtos = memberRepository.findMemberDto();
+        
+        for (MemberDto memberDto : memberDtos) {
+            System.out.println("memberDto = " + memberDto);
+        }
+    }
+
+    @Test
+    public void findByNames() {
+        Member member1 = new Member("User1", 10);
+        Member member2 = new Member("User2", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> findNames = memberRepository.findByNames(Arrays.asList("User1", "User2"));
+
+        for(Member member : findNames) {
+            System.out.println("member = " + member);
+        }
+    }
+
+    @Test
+    public void returnType() {
+        Member member1 = new Member("User1", 10);
+        Member member2 = new Member("User2", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> listResult = memberRepository.findListByUsername("User1");
+        Member singleResult = memberRepository.findMemberByUsername("User1");
+        Optional<Member> optionalResult = memberRepository.findOptionalByUsername("User1");
+
+        assertEquals(member1, listResult.get(0));
+        assertEquals(member1, singleResult);
+        assertEquals(member1, optionalResult.get());
+    }
+
+    @Test
+    public void testPaging() {
+        memberRepository.save(new Member("User1", 10));
+        memberRepository.save(new Member("User2", 10));
+        memberRepository.save(new Member("User3", 10));
+        memberRepository.save(new Member("User4", 10));
+        memberRepository.save(new Member("User5", 10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
+
+        // Page
+        Page<Member> page = memberRepository.findPageByAge(age, pageRequest);
+
+        List<Member> pageContent = page.getContent();
+        long pageTotalElements = page.getTotalElements();
+
+        assertEquals(3, pageContent.size());
+        assertEquals(5, pageTotalElements);
+        assertEquals(0, page.getNumber());
+        assertEquals(2, page.getTotalPages());
+        assertTrue(page.isFirst());
+        assertTrue(page.hasNext());
+
+        // Member -> MemberDto
+        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
+
+        // Slice
+        Slice<Member> slice = memberRepository.findSliceByAge(age, pageRequest);
+
+        List<Member> sliceContent = slice.getContent();
+
+        assertEquals(3, sliceContent.size());
+        assertEquals(0, slice.getNumber());
+        assertTrue(slice.isFirst());
+        assertTrue(slice.hasNext());
     }
 }
