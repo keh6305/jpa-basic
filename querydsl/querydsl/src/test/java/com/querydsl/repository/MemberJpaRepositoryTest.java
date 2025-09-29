@@ -1,6 +1,9 @@
 package com.querydsl.repository;
 
+import com.querydsl.dto.MemberSearchCondition;
+import com.querydsl.dto.MemberTeamDto;
 import com.querydsl.entity.Member;
+import com.querydsl.entity.Team;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +54,61 @@ class MemberJpaRepositoryTest {
 
         List<Member> result2 = memberJpaRepository.findByUsername_querydsl("member1");
         assertThat(result2).containsExactly(member);
+    }
+
+    @Test
+    public void testSearchBuilder() {
+        Team team1 = new Team("team1");
+        Team team2 = new Team("team2");
+
+        em.persist(team1);
+        em.persist(team2);
+
+        Member member1 = new Member("member1", 10, team1);
+        Member member2 = new Member("member2", 20, team1);
+        Member member3 = new Member("member3", 30, team2);
+        Member member4 = new Member("member4", 40, team2);
+
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+        em.persist(member4);
+
+        MemberSearchCondition condition = new MemberSearchCondition();
+        condition.setAgeGoe(35);
+        condition.setAgeLoe(40);
+        condition.setTeamName("team2");
+
+        List<MemberTeamDto> result = memberJpaRepository.searchByBuilder(condition);
+
+        assertThat(result).extracting("username").containsExactly("member4");
+    }
+
+    @Test
+    public void testSearchWhere() {
+        Team team1 = new Team("team1");
+        Team team2 = new Team("team2");
+
+        em.persist(team1);
+        em.persist(team2);
+
+        Member member1 = new Member("member1", 10, team1);
+        Member member2 = new Member("member2", 20, team1);
+        Member member3 = new Member("member3", 30, team2);
+        Member member4 = new Member("member4", 40, team2);
+
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+        em.persist(member4);
+
+        MemberSearchCondition condition = new MemberSearchCondition();
+        condition.setAgeGoe(35);
+        condition.setAgeLoe(40);
+        condition.setTeamName("team2");
+
+        List<MemberTeamDto> result = memberJpaRepository.searchByWhere(condition);
+
+        assertThat(result).extracting("username").containsExactly("member4");
     }
 }
